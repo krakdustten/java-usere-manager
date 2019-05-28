@@ -1,7 +1,7 @@
 package me.dylan.userManager.db.model;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import me.dylan.userManager.db.dao.MessageDAO;
+import org.hibernate.collection.internal.PersistentBag;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -17,6 +17,9 @@ import java.util.List;
 @Table(name="users")
 @XmlRootElement
 public class User implements Serializable {
+
+    @Transient
+    private MessageDAO messageDAO = MessageDAO.get();
 
     @Id
     @GeneratedValue
@@ -59,26 +62,32 @@ public class User implements Serializable {
     private boolean confirmed;
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
-    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<Message> receivedMessages = new ArrayList<>();
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
-    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<Message> senderMessages = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<TeamUser> teamUsers = new ArrayList<>();
 
     @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL)
-    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<UserFriend> friendSend = new ArrayList<>();
 
     @OneToMany(mappedBy = "user2", cascade = CascadeType.ALL)
-    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<UserFriend> friendRecv = new ArrayList<>();
 
     public User(){ }
+
+    public User(String name, String email, String password, String salt, String currentID, Date validUntilID, long rights, boolean confirmed) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.salt = salt;
+        this.currentID = currentID;
+        this.validUntilID = validUntilID;
+        this.rights = rights;
+        this.confirmed = confirmed;
+    }
 
     public long getId() { return id; }
     public String getName() { return name; }
@@ -89,11 +98,41 @@ public class User implements Serializable {
     public Date getValidUntilID() { return validUntilID; }
     public long getRights() { return rights; }
     public boolean isConfirmed() { return confirmed; }
-    public List<Message> getReceivedMessages() { return receivedMessages; }
-    public List<Message> getSenderMessages() { return senderMessages; }
-    public List<TeamUser> getTeamUsers() { return teamUsers; }
-    public List<UserFriend> getFriendSend() { return friendSend; }
-    public List<UserFriend> getFriendRecv() { return friendRecv; }
+    public List<Message> getReceivedMessages() {
+        if(receivedMessages != null) {
+            if(!(receivedMessages instanceof PersistentBag))
+                return receivedMessages;
+        }
+        receivedMessages = messageDAO.getFromReceiver(id);
+        return receivedMessages;
+    }
+    public List<Message> getSenderMessages() {
+        if(senderMessages != null)
+            if(!(senderMessages instanceof PersistentBag))
+                return senderMessages;
+        senderMessages = messageDAO.getFromSender(id);
+        return senderMessages;
+    }
+    public List<TeamUser> getTeamUsers() {
+        if(teamUsers != null)
+            if(!(teamUsers instanceof PersistentBag))
+                return teamUsers;
+        return null;
+    }
+
+    public List<UserFriend> getFriendSend() {
+        if(friendSend != null)
+            if(!(friendSend instanceof PersistentBag))
+                return friendSend;
+        return null;
+    }
+
+    public List<UserFriend> getFriendRecv() {
+        if(friendRecv != null)
+            if(!(friendRecv instanceof PersistentBag))
+                return friendRecv;
+        return null;
+    }
 
     public void setId(long id) { this.id = id; }
     public void setName(String name) { this.name = name; }

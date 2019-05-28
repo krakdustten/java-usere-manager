@@ -14,8 +14,7 @@ import java.util.List;
 @Path("/users")
 public class UserService {
 
-    @Autowired
-    private UserDAO userDAO;
+    private UserDAO userDAO = UserDAO.get();
 
     @GET
     @Path("all")
