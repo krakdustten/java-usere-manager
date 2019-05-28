@@ -22,13 +22,37 @@ public class Message {
     @JoinColumn(name = "receiver_id")
     private User receiver;
 
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private User sender;
+
+    @Column(name="message")
+    @Length(max = 1024)
+    @NotNull
+    private String message;
+
+    @Column(name="sendTime")
+    @Temporal(TemporalType.TIMESTAMP)
+    @DefaultValue("0")
+    private Date sendTime;
+
+    @Column(name="receiverRead")
+    @DefaultValue("false")
+    private boolean receiverRead;
+
     public Message(){}
 
     public long getId() { return id; }
     public User getReceiver() { return receiver; }
+    public User getSender() { return sender; }
+    public String getMessage() { return message; }
+    public Date getSendTime() { return sendTime; }
+    public boolean isReceiverRead() { return receiverRead; }
 
     public void setId(long id) { this.id = id; }
-    public void setReceiver(User receiver){
-        this.receiver = receiver;
-    }
+    public void setReceiver(User receiver){ this.receiver = receiver; }
+    public void setSender(User sender) { this.sender = sender; }
+    public void setMessage(String message) { this.message = message; }
+    public void setSendTime(Date sendTime) { this.sendTime = sendTime; }
+    public void setReceiverRead(boolean receiverRead) { this.receiverRead = receiverRead; }
 }

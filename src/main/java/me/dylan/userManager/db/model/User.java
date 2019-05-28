@@ -1,5 +1,7 @@
 package me.dylan.userManager.db.model;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -56,12 +58,27 @@ public class User implements Serializable {
     @DefaultValue("false")
     private boolean confirmed;
 
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Message> receivedMessages = new ArrayList<>();
 
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Message> senderMessages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<TeamUser> teamUsers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<UserFriend> friendSend = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user2", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<UserFriend> friendRecv = new ArrayList<>();
+
     public User(){ }
-
-
 
     public long getId() { return id; }
     public String getName() { return name; }
@@ -73,6 +90,10 @@ public class User implements Serializable {
     public long getRights() { return rights; }
     public boolean isConfirmed() { return confirmed; }
     public List<Message> getReceivedMessages() { return receivedMessages; }
+    public List<Message> getSenderMessages() { return senderMessages; }
+    public List<TeamUser> getTeamUsers() { return teamUsers; }
+    public List<UserFriend> getFriendSend() { return friendSend; }
+    public List<UserFriend> getFriendRecv() { return friendRecv; }
 
     public void setId(long id) { this.id = id; }
     public void setName(String name) { this.name = name; }
@@ -87,4 +108,21 @@ public class User implements Serializable {
         this.receivedMessages.add(receivedMessage);
         receivedMessage.setReceiver(this);
     }
+    public void addSenderMessage(Message senderMessage) {
+        this.senderMessages.add(senderMessage);
+        senderMessage.setReceiver(this);
+    }
+    public void addTeamUser(TeamUser teamUser) {
+        this.teamUsers.add(teamUser);
+        teamUser.setUser(this);
+    }
+    public void addFriendSend(UserFriend friendSend) {
+        this.friendSend.add(friendSend);
+        friendSend.setUser1(this);
+    }
+    public void addFriendRecv(UserFriend friendRecv) {
+        this.friendRecv.add(friendRecv);
+        friendRecv.setUser2(this);
+    }
+
 }

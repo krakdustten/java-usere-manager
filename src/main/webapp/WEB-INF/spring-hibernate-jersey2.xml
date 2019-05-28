@@ -21,6 +21,9 @@
             <list>
                 <value>me.dylan.userManager.db.model.User</value>
                 <value>me.dylan.userManager.db.model.Message</value>
+                <value>me.dylan.userManager.db.model.Team</value>
+                <value>me.dylan.userManager.db.model.TeamUser</value>
+                <value>me.dylan.userManager.db.model.UserFriend</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -28,6 +31,8 @@
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.max_fetch_depth">2</prop>
+                <prop key="hibernate.default_batch_fetch_size">2</prop>
             </props>
         </property>
     </bean>
