@@ -59,23 +59,23 @@ public class User implements Serializable {
     private boolean confirmed;
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<Message> receivedMessages = new ArrayList<>();
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<Message> senderMessages = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<TeamUser> teamUsers = new ArrayList<>();
 
     @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<UserFriend> friendSend = new ArrayList<>();
 
     @OneToMany(mappedBy = "user2", cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<UserFriend> friendRecv = new ArrayList<>();
 
     public User(){ }
@@ -125,4 +125,18 @@ public class User implements Serializable {
         friendRecv.setUser2(this);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{id: '");
+        sb.append(id);
+        sb.append("', name: '");
+        sb.append(name);
+        sb.append("', email: '");
+        sb.append(email);
+        sb.append("', password: '");
+        sb.append(password);
+        sb.append("'}\n");
+        return sb.toString();
+    }
 }
