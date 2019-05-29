@@ -5,17 +5,20 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DefaultValue;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.Date;
 
 @Entity
 @Table(name="messages")
-@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Message {
     @Id
     @GeneratedValue
     @Column(name="id")
-    @NotNull
+    @XmlTransient
     private long id;
 
     @ManyToOne

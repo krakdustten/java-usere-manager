@@ -1,7 +1,10 @@
 package me.dylan.userManager.db.dao;
 
 import me.dylan.userManager.db.model.Message;
+import me.dylan.userManager.db.model.TeamUser;
 import me.dylan.userManager.db.model.User;
+import me.dylan.userManager.db.model.UserFriend;
+import me.dylan.userManager.util.DataBaseUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,19 +32,29 @@ public class MessageDAO {
 
     @Transactional
     public List<Message> getAll() {
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<Message> criteriaQuery = criteriaBuilder.createQuery(Message.class);
-        Root<Message> from = criteriaQuery.from(Message.class);
-        CriteriaQuery<Message> select = criteriaQuery.select(from);
-        TypedQuery<Message> typedQuery = session.createQuery(select);
-        List<Message> messages = typedQuery.getResultList();
-        return messages;
+        return DataBaseUtils.getTableListWith(sessionFactory, new String[]{}, new Object[]{}, Message.class);
     }
 
     public List<Message> getReceived(long id) {
-        Query query = sessionFactory.getCurrentSession().createQuery("from Message where receiver = :userId");
-        query.setParameter("userId", id);
-        return query.getResultList();
+        return DataBaseUtils.getTableListWith(sessionFactory, new String[]{"receiver"}, new Object[]{id}, Message.class);
+    }
+
+    public List<Message> getSender(long id) {
+        return DataBaseUtils.getTableListWith(sessionFactory, new String[]{"sender"}, new Object[]{id}, Message.class);
+    }
+
+    @Transactional
+    public long insertNew(Message message) {
+        return (long) (Long) sessionFactory.getCurrentSession().save(message);
+    }
+
+    @Transactional
+    public void update(Message message) {
+        sessionFactory.getCurrentSession().update(message);
+    }
+
+    @Transactional
+    public void remove(Message message) {
+        DataBaseUtils.removeTableWith(sessionFactory,new String[]{"id"}, new Object[]{message.getId()}, Message.class );
     }
 }

@@ -8,7 +8,10 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DefaultValue;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,13 +19,13 @@ import java.util.List;
 
 @Entity
 @Table(name="users")
-@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class User implements Serializable {
 
     @Id
     @GeneratedValue
     @Column(name="id")
-    @NotNull
+    @XmlTransient
     private long id;
 
     @Column(name="name", unique = true)
@@ -36,14 +39,17 @@ public class User implements Serializable {
     @Column(name="password")
     @Length(max = 128)
     @NotNull
+    @XmlTransient
     private String password;
 
     @Column(name="salt")
     @Length(max = 128)
     @NotNull
+    @XmlTransient
     private String salt;
 
     @Column(name="currentID")
+    @Length(max = 128)
     private String currentID;
 
     @Column(name="validUntilID")
@@ -57,26 +63,32 @@ public class User implements Serializable {
 
     @Column(name="confirmed")
     @DefaultValue("false")
+    @XmlTransient
     private boolean confirmed;
 
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "receiver")
     //@LazyCollection(LazyCollectionOption.FALSE)
+    @XmlTransient
     private List<Message> receivedMessages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sender")
     //@LazyCollection(LazyCollectionOption.FALSE)
+    @XmlTransient
     private List<Message> senderMessages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     //@LazyCollection(LazyCollectionOption.FALSE)
+    @XmlTransient
     private List<TeamUser> teamUsers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user1")
     //@LazyCollection(LazyCollectionOption.FALSE)
+    @XmlTransient
     private List<UserFriend> friendSend = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user2", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user2")
     //@LazyCollection(LazyCollectionOption.FALSE)
+    @XmlTransient
     private List<UserFriend> friendRecv = new ArrayList<>();
 
     public User(){ }

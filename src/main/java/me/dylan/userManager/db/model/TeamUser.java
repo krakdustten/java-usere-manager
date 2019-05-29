@@ -2,18 +2,21 @@ package me.dylan.userManager.db.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 @Entity
 @Table(name="team_users")
-@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class TeamUser implements Serializable {
 
     @Id
     @GeneratedValue
     @Column(name="id")
-    @NotNull
+    @XmlTransient
     private long id;
 
     @ManyToOne

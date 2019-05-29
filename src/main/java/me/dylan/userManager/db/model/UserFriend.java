@@ -3,19 +3,22 @@ package me.dylan.userManager.db.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DefaultValue;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Table(name="user_friends")
-@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class UserFriend implements Serializable {
 
     @Id
     @GeneratedValue
     @Column(name="id")
-    @NotNull
+    @XmlTransient
     private long id;
 
     @ManyToOne
