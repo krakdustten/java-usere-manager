@@ -19,7 +19,7 @@ import java.security.SecureRandom;
 import java.util.*;
 
 @Component
-@Path("/users")
+@Path("/user")
 public class UserService {
 
     @Autowired
