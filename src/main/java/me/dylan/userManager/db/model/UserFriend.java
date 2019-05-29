@@ -29,10 +29,10 @@ public class UserFriend implements Serializable {
     @JoinColumn(name = "user2_id")
     private User user2;
 
-    @Column(name="validUntilID")
+    @Column(name="startTime")
     @Temporal(TemporalType.TIMESTAMP)
     @DefaultValue("0")
-    private Date validUntilID;
+    private Date startTime;
 
     @Column(name="confirmed")
     @DefaultValue("false")
@@ -43,12 +43,12 @@ public class UserFriend implements Serializable {
     public long getId() { return id; }
     public User getUser1() { return user1; }
     public User getUser2() { return user2; }
-    public Date getValidUntilID() { return validUntilID; }
+    public Date getStartTime() { return startTime; }
     public boolean isConfirmed() { return confirmed; }
 
     public void setId(long id) { this.id = id; }
     public void setUser1(User user1) { this.user1 = user1; }
     public void setUser2(User user2) { this.user2 = user2; }
-    public void setValidUntilID(Date validUntilID) { this.validUntilID = validUntilID; }
+    public void setStartTime(Date startTime) { this.startTime = startTime; }
     public void setConfirmed(boolean confirmed) { this.confirmed = confirmed; }
 }

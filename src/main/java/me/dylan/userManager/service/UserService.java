@@ -1,6 +1,7 @@
 package me.dylan.userManager.service;
 
 import me.dylan.userManager.modelsJSON.UserCurrentIDJSON;
+import me.dylan.userManager.modelsJSON.UserGetJSON;
 import me.dylan.userManager.util.EmailHandler;
 import me.dylan.userManager.util.MapError;
 import me.dylan.userManager.util.Util;
@@ -35,8 +36,7 @@ public class UserService {
             return Response.status(Response.Status.OK).entity(map).build();
         }
         User user = userDAO.get(ul.getUsername(), ul.getPassword());
-        if(user == null)
-            return Response.status(Response.Status.OK).entity(MapError.USER_NOT_FOUND.toString()).build();
+        if(user == null) return MapError.USER_NOT_FOUND.getError();
 
         SecureRandom random = new SecureRandom();
         byte cid[] = new byte[64];
@@ -68,8 +68,7 @@ public class UserService {
             return Response.status(Response.Status.OK).entity(map).build();
         }
         User check = userDAO.get(ur.getUsername());
-        if(check != null)
-            return Response.status(Response.Status.OK).entity(MapError.USER_ALREADY_EXISTS.toString()).build();
+        if(check != null) return MapError.USER_ALREADY_EXISTS.getError();
 
         Date currentDate = new Date();
         Calendar c = Calendar.getInstance();
@@ -102,13 +101,10 @@ public class UserService {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public String confirm(@QueryParam("username") String username, @QueryParam("confirmID") String confirmID) {
-        if(username == null || confirmID == null)
-            return "Not all data given.";
+        if(username == null || confirmID == null) return "Not all data given.";
         User user = userDAO.get(username);
-        if(user == null)
-            return MapError.USER_NOT_FOUND.getName();
-        if(user.isConfirmed())
-            return "USer already confirmed.";
+        if(user == null) return MapError.USER_NOT_FOUND.getName();
+        if(user.isConfirmed()) return "USer already confirmed.";
         if(user.getValidUntilID().before(new Date())){
             userDAO.remove(user);
             return "Expired.";
@@ -127,13 +123,24 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response remove(UserCurrentIDJSON uc) {
         if(uc.getCurrentID() == null || uc.getUsername() == null)
-            return Response.status(Response.Status.OK).entity(MapError.JSON_STRUCTURE_WRONG.toString()).build();
+            return MapError.JSON_STRUCTURE_WRONG.getError();
         User user = userDAO.getCID(uc.getUsername(), uc.getCurrentID());
-        if(user == null)
-            return Response.status(Response.Status.OK).entity(MapError.USER_NOT_FOUND.toString()).build();
+        if(user == null) return MapError.USER_NOT_FOUND.getError();
         userDAO.remove(user);
         Map<String, String> map = new HashMap<>();
         map.put("done", "ok");
         return Response.status(Response.Status.OK).entity(map).build();
+    }
+
+    @POST
+    @Path("get")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response get(UserGetJSON ug) {
+        if(ug.getUsername() == null || ug.getCurrentID() == null)
+            return MapError.JSON_STRUCTURE_WRONG.getError();
+        User user = userDAO.getCID(ug.getUsername(), ug.getCurrentID());
+        if(user == null) return MapError.USER_NOT_FOUND.getError();
+        return Response.status(Response.Status.OK).entity(user).build();
     }
 }
