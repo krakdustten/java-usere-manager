@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.DefaultValue;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.Date;
 
@@ -15,6 +14,7 @@ import java.util.Date;
 @Table(name="messages")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Message {
+
     @Id
     @GeneratedValue
     @Column(name="id")

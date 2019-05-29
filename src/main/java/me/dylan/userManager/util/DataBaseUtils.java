@@ -14,28 +14,22 @@ public class DataBaseUtils {
     }
 
     public static <T> List<T> getTableListWith(SessionFactory sessionFactory, String[] coln, Object[] data, Class<T> table){
-        if(coln.length != data.length)
-            return null;
+        if(coln.length != data.length) return null;
 
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(table);
         Root<T> from = criteriaQuery.from(table);
         criteriaQuery = criteriaQuery.select(from);
-        if(coln.length == 1)
-            criteriaQuery = criteriaQuery.where(criteriaBuilder.equal(from.get(coln[0]), data[0]));
+        if(coln.length == 1) criteriaQuery = criteriaQuery.where(criteriaBuilder.equal(from.get(coln[0]), data[0]));
         else if(coln.length > 1){
             Predicate predicate = criteriaBuilder.and(
                     criteriaBuilder.equal(from.get(coln[0]), data[0]),
                     criteriaBuilder.equal(from.get(coln[1]), data[1]));
-            for(int i = 2; i < coln.length; i++) {
-                predicate = criteriaBuilder.and(
-                        predicate,
-                        criteriaBuilder.equal(from.get(coln[i]), data[i]));
-            }
+            for(int i = 2; i < coln.length; i++)
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(from.get(coln[i]), data[i]));
             criteriaQuery.where(predicate);
         }
-
         TypedQuery<T> typedQuery = session.createQuery(criteriaQuery);
         List<T> users = typedQuery.getResultList();
         return users;
@@ -46,22 +40,16 @@ public class DataBaseUtils {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaDelete<T> delete = criteriaBuilder.createCriteriaDelete(table);
         Root<T> from = delete.from(table);
-        if(coln.length == 1)
-            delete.where(criteriaBuilder.equal(from.get(coln[0]), data[0]));
+        if(coln.length == 1) delete.where(criteriaBuilder.equal(from.get(coln[0]), data[0]));
         else if(coln.length > 1){
             Predicate predicate = criteriaBuilder.and(
                     criteriaBuilder.equal(from.get(coln[0]), data[0]),
                     criteriaBuilder.equal(from.get(coln[1]), data[1]));
-            for(int i = 2; i < coln.length; i++) {
-                predicate = criteriaBuilder.and(
-                        predicate,
-                        criteriaBuilder.equal(from.get(coln[i]), data[i]));
-            }
+            for(int i = 2; i < coln.length; i++)
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(from.get(coln[i]), data[i]));
             delete.where(predicate);
         }
-        else
-            return;
-
+        else return;
         session.createQuery(delete).executeUpdate();
     }
 }

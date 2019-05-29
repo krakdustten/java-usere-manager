@@ -1,7 +1,5 @@
 package me.dylan.userManager.db.model;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.collection.internal.PersistentBag;
 import org.hibernate.validator.constraints.Length;
 
@@ -10,7 +8,6 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.DefaultValue;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -67,27 +64,22 @@ public class User implements Serializable {
     private boolean confirmed;
 
     @OneToMany(mappedBy = "receiver")
-    //@LazyCollection(LazyCollectionOption.FALSE)
     @XmlTransient
     private List<Message> receivedMessages = new ArrayList<>();
 
     @OneToMany(mappedBy = "sender")
-    //@LazyCollection(LazyCollectionOption.FALSE)
     @XmlTransient
     private List<Message> senderMessages = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    //@LazyCollection(LazyCollectionOption.FALSE)
     @XmlTransient
     private List<TeamUser> teamUsers = new ArrayList<>();
 
     @OneToMany(mappedBy = "user1")
-    //@LazyCollection(LazyCollectionOption.FALSE)
     @XmlTransient
     private List<UserFriend> friendSend = new ArrayList<>();
 
     @OneToMany(mappedBy = "user2")
-    //@LazyCollection(LazyCollectionOption.FALSE)
     @XmlTransient
     private List<UserFriend> friendRecv = new ArrayList<>();
 

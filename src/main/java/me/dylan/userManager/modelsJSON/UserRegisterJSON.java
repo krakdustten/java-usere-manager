@@ -1,10 +1,10 @@
 package me.dylan.userManager.modelsJSON;
 
 public class UserRegisterJSON {
-    String salt;
-    String username;
-    String password;
-    String email;
+    private String salt;
+    private String username;
+    private String password;
+    private String email;
 
     public String getSalt() { return salt; }
     public String getUsername() { return username; }

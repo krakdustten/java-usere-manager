@@ -13,7 +13,6 @@ public class EmailHandler {
     private static final String SENDER_EMAIL = "usermanager.info@gmail.com";
     private static final String PASSWORD = "Info1234";
 
-
     public static void sendEmail(String receiver, String subject, String content){
         Properties prop = new Properties();
         prop.put("mail.smtp.host", SMTP_SERVER);
@@ -28,13 +27,9 @@ public class EmailHandler {
                     }
                 });
         try {
-
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(SENDER_EMAIL));
-            message.setRecipients(
-                    Message.RecipientType.TO,
-                    InternetAddress.parse(receiver)
-            );
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(receiver));
             message.setSubject(subject);
             message.setContent(content, "text/html");
             Transport.send(message);

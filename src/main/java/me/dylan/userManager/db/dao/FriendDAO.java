@@ -1,8 +1,5 @@
 package me.dylan.userManager.db.dao;
 
-import me.dylan.userManager.db.model.Message;
-import me.dylan.userManager.db.model.TeamUser;
-import me.dylan.userManager.db.model.User;
 import me.dylan.userManager.db.model.UserFriend;
 import me.dylan.userManager.util.DataBaseUtils;
 import org.hibernate.Session;
@@ -19,7 +16,8 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository("friendDAO")
-public class FriendDAO{
+public class FriendDAO {
+
     @Autowired
     private SessionFactory sessionFactory;
     public SessionFactory getSessionFactory() { return sessionFactory; }

@@ -1,7 +1,6 @@
 package me.dylan.userManager.db.dao;
 
 import me.dylan.userManager.db.model.Message;
-import me.dylan.userManager.db.model.UserFriend;
 import me.dylan.userManager.util.DataBaseUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
