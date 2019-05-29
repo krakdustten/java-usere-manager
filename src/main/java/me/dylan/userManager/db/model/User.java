@@ -1,6 +1,7 @@
 package me.dylan.userManager.db.model;
 
-import me.dylan.userManager.db.dao.MessageDAO;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.collection.internal.PersistentBag;
 import org.hibernate.validator.constraints.Length;
 
@@ -17,9 +18,6 @@ import java.util.List;
 @Table(name="users")
 @XmlRootElement
 public class User implements Serializable {
-
-    @Transient
-    private MessageDAO messageDAO = MessageDAO.get();
 
     @Id
     @GeneratedValue
@@ -62,31 +60,46 @@ public class User implements Serializable {
     private boolean confirmed;
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<Message> receivedMessages = new ArrayList<>();
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<Message> senderMessages = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<TeamUser> teamUsers = new ArrayList<>();
 
     @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<UserFriend> friendSend = new ArrayList<>();
 
     @OneToMany(mappedBy = "user2", cascade = CascadeType.ALL)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     private List<UserFriend> friendRecv = new ArrayList<>();
 
     public User(){ }
 
-    public User(String name, String email, String password, String salt, String currentID, Date validUntilID, long rights, boolean confirmed) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.salt = salt;
-        this.currentID = currentID;
-        this.validUntilID = validUntilID;
-        this.rights = rights;
-        this.confirmed = confirmed;
+    public void addReceivedMessage(Message receivedMessage) {
+        this.receivedMessages.add(receivedMessage);
+        receivedMessage.setReceiver(this);
+    }
+    public void addSenderMessage(Message senderMessage) {
+        this.senderMessages.add(senderMessage);
+        senderMessage.setReceiver(this);
+    }
+    public void addTeamUser(TeamUser teamUser) {
+        this.teamUsers.add(teamUser);
+        teamUser.setUser(this);
+    }
+    public void addFriendSend(UserFriend friendSend) {
+        this.friendSend.add(friendSend);
+        friendSend.setUser1(this);
+    }
+    public void addFriendRecv(UserFriend friendRecv) {
+        this.friendRecv.add(friendRecv);
+        friendRecv.setUser2(this);
     }
 
     public long getId() { return id; }
@@ -103,15 +116,13 @@ public class User implements Serializable {
             if(!(receivedMessages instanceof PersistentBag))
                 return receivedMessages;
         }
-        receivedMessages = messageDAO.getFromReceiver(id);
-        return receivedMessages;
+        return null;
     }
     public List<Message> getSenderMessages() {
         if(senderMessages != null)
             if(!(senderMessages instanceof PersistentBag))
                 return senderMessages;
-        senderMessages = messageDAO.getFromSender(id);
-        return senderMessages;
+        return null;
     }
     public List<TeamUser> getTeamUsers() {
         if(teamUsers != null)
@@ -143,39 +154,10 @@ public class User implements Serializable {
     public void setValidUntilID(Date validUntilID) { this.validUntilID = validUntilID; }
     public void setRights(long rights) { this.rights = rights; }
     public void setConfirmed(boolean confirmed) { this.confirmed = confirmed; }
-    public void addReceivedMessage(Message receivedMessage) {
-        this.receivedMessages.add(receivedMessage);
-        receivedMessage.setReceiver(this);
-    }
-    public void addSenderMessage(Message senderMessage) {
-        this.senderMessages.add(senderMessage);
-        senderMessage.setReceiver(this);
-    }
-    public void addTeamUser(TeamUser teamUser) {
-        this.teamUsers.add(teamUser);
-        teamUser.setUser(this);
-    }
-    public void addFriendSend(UserFriend friendSend) {
-        this.friendSend.add(friendSend);
-        friendSend.setUser1(this);
-    }
-    public void addFriendRecv(UserFriend friendRecv) {
-        this.friendRecv.add(friendRecv);
-        friendRecv.setUser2(this);
-    }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{id: '");
-        sb.append(id);
-        sb.append("', name: '");
-        sb.append(name);
-        sb.append("', email: '");
-        sb.append(email);
-        sb.append("', password: '");
-        sb.append(password);
-        sb.append("'}\n");
-        return sb.toString();
-    }
+    public void setReceivedMessages(List<Message> receivedMessages) { this.receivedMessages = receivedMessages; }
+    public void setSenderMessages(List<Message> senderMessages) { this.senderMessages = senderMessages; }
+    public void setTeamUsers(List<TeamUser> teamUsers) { this.teamUsers = teamUsers; }
+    public void setFriendSend(List<UserFriend> friendSend) { this.friendSend = friendSend; }
+    public void setFriendRecv(List<UserFriend> friendRecv) { this.friendRecv = friendRecv; }
 }
