@@ -15,7 +15,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
-@Repository("MessageDAO")
+@Repository("messageDAO")
 public class MessageDAO {
 
     @Autowired

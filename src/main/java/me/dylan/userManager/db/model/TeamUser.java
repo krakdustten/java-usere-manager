@@ -25,13 +25,18 @@ public class TeamUser implements Serializable {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    @Column(name="rights")
+    private long rights;
+
     public TeamUser() { }
 
     public long getId() { return id; }
     public User getUser() { return user; }
     public Team getTeam() { return team; }
+    public long getRights() { return rights; }
 
     public void setId(long id) { this.id = id; }
     public void setUser(User user) { this.user = user; }
     public void setTeam(Team team) { this.team = team; }
+    public void setRights(long rights) { this.rights = rights; }
 }

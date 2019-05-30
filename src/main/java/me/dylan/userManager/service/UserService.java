@@ -1,14 +1,11 @@
 package me.dylan.userManager.service;
 
-import me.dylan.userManager.modelsJSON.UserCurrentIDJSON;
-import me.dylan.userManager.modelsJSON.UserGetJSON;
+import me.dylan.userManager.modelsJSON.*;
 import me.dylan.userManager.util.EmailHandler;
 import me.dylan.userManager.util.MapError;
 import me.dylan.userManager.util.Util;
 import me.dylan.userManager.db.dao.UserDAO;
 import me.dylan.userManager.db.model.User;
-import me.dylan.userManager.modelsJSON.UserLoginJSON;
-import me.dylan.userManager.modelsJSON.UserRegisterJSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,8 +28,10 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(UserLoginJSON ul) {
         if(ul.getPassword() == null){
+            User user = userDAO.get(ul.getUsername());
+            if(user == null) return MapError.USER_NOT_FOUND.getError();
             Map<String, String> map = new HashMap<>();
-            map.put("salt", userDAO.get(ul.getUsername()).getSalt());
+            map.put("salt", user.getSalt());
             return Response.status(Response.Status.OK).entity(map).build();
         }
         User user = userDAO.get(ul.getUsername(), ul.getPassword());
@@ -142,5 +141,26 @@ public class UserService {
         User user = userDAO.getCID(ug.getUsername(), ug.getCurrentID());
         if(user == null) return MapError.USER_NOT_FOUND.getError();
         return Response.status(Response.Status.OK).entity(user).build();
+    }
+
+    @POST
+    @Path("role")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response get(UserRoleJSON ur) {
+        if(ur.getUsername() == null || ur.getCurrentID() == null || ur.getSetname() == null || ur.getSetrights() < 0)
+            return MapError.JSON_STRUCTURE_WRONG.getError();
+        User user = userDAO.getCID(ur.getUsername(), ur.getCurrentID());
+        if(user == null) return MapError.USER_NOT_FOUND.getError();
+        if(user.getRights() < 2500) return MapError.USER_RIGHTS_TO_LOW.getError();
+        User setu = userDAO.get(ur.getSetname());
+        if(setu == null) return MapError.USER_NOT_FOUND.getError();
+
+        setu.setRights(ur.getSetrights());
+        userDAO.update(setu);
+
+        Map<String, String> map = new HashMap<>();
+        map.put("done", "ok");
+        return Response.status(Response.Status.OK).entity(map).build();
     }
 }
