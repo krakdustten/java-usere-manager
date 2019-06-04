@@ -92,6 +92,7 @@ public class TeamService {
             for(TeamUser tu : tul){
                 TeamReturnJSON tr = new TeamReturnJSON();
                 tr.setName(tu.getTeam().getName());
+                tr.setRights(tu.getRights());
                 trl.add(tr);
             }
             return Response.status(Response.Status.OK).entity(trl).build();
@@ -102,6 +103,7 @@ public class TeamService {
             TeamUser teamUser = teamDAO.get(user.getId(), team.getId());
             if(teamUser == null) return MapError.USER_NOT_FOUND_IN_TEAM.getError();
             List<TeamUser> tul = team.getTeamUsers();
+
             List<TeamUsersReturnJSON> turl = new ArrayList<>();
             for(TeamUser tu : tul){
                 TeamUsersReturnJSON tur = new TeamUsersReturnJSON();
@@ -109,7 +111,12 @@ public class TeamService {
                 tur.setRights(tu.getRights());
                 turl.add(tur);
             }
-            return Response.status(Response.Status.OK).entity(turl).build();
+
+            TeamUserListReturnJSON tulr = new TeamUserListReturnJSON();
+            tulr.setId(team.getId());
+            tulr.setUserlist(turl);
+
+            return Response.status(Response.Status.OK).entity(tulr).build();
         }
     }
 
@@ -166,7 +173,27 @@ public class TeamService {
         if(user.getId() != member.getId() && teamUser.getRights() < 100) return MapError.USER_TEAM_RIGHTS_TOO_LOW.getError();
         if(teamUser.getRights() < teamMember.getRights()) return  MapError.USER_TEAM_RIGHTS_TOO_LOW.getError();
 
-        teamDAO.remove(teamUser);
+        if(team.getTeamUsers().size() <= 1)
+            teamDAO.remove(team);
+        else{
+            TeamUser maxRights;
+            if(team.getTeamUsers().get(0).getId() != teamMember.getId())
+                maxRights = team.getTeamUsers().get(0);
+            else
+                maxRights = team.getTeamUsers().get(1);
+            for(int i = 0; i < team.getTeamUsers().size(); i++) {
+                TeamUser check = team.getTeamUsers().get(i);
+                if(check.getId() != teamMember.getId())
+                    if (maxRights.getRights() < check.getRights())
+                        maxRights = check;
+            }
+            if(maxRights.getRights() < 2500){
+                maxRights.setRights(2500);
+                teamDAO.update(maxRights);
+            }
+            teamDAO.remove(teamMember);
+        }
+
 
         Map<String, String> map = new HashMap<>();
         map.put("done", "ok");
@@ -192,6 +219,21 @@ public class TeamService {
         if(teamMember == null) return MapError.USER_NOT_FOUND_IN_TEAM.getError();
         if(teamMember.getRights() > teamUser.getRights() || tma.getMemberrights() > teamUser.getRights())
             return MapError.USER_TEAM_RIGHTS_TOO_LOW.getError();
+
+        if(teamMember.getRights() >= 2500){
+            boolean ok = false;
+            for(int i = 0; i < team.getTeamUsers().size(); i++){
+                if(team.getTeamUsers().get(i).getRights() >= 2500){
+                    ok = true;
+                    break;
+                }
+            }
+            if(!ok){
+                Map<String, String> map = new HashMap<>();
+                map.put("done", "nok");
+                return Response.status(Response.Status.OK).entity(map).build();
+            }
+        }
 
         teamMember.setRights(tma.getMemberrights());
         teamDAO.update(teamMember);

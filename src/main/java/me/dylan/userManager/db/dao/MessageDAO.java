@@ -29,7 +29,7 @@ public class MessageDAO {
 
     @Transactional
     public List<Message> getAll() {
-        return DataBaseUtils.getTableListWith(sessionFactory, new String[]{}, new Object[]{}, Message.class);
+        return DataBaseUtils.getTableListWith(sessionFactory, new String[]{}, new Object[]{}, "sendTime", Message.class);
     }
 
     @Transactional
@@ -45,6 +45,7 @@ public class MessageDAO {
                         criteriaBuilder.equal(from.get("sender"), user_id)
                 );
         criteriaQuery.where(predicate);
+        criteriaQuery.orderBy(criteriaBuilder.desc(from.get("sendTime")));
         TypedQuery<Message> typedQuery = session.createQuery(criteriaQuery);
         return typedQuery.getResultList();
     }

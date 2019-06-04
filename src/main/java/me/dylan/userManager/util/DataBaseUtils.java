@@ -8,12 +8,16 @@ import javax.persistence.criteria.*;
 import java.util.List;
 
 public class DataBaseUtils {
-    public static <T> T getTableWith(SessionFactory sessionFactory, String[] coln, Object[] data, Class<T> table){
-        List<T> tbl = getTableListWith(sessionFactory, coln, data, table);
+    public static <T> T getTableWith(SessionFactory sessionFactory, String[] coln, Object[] data, String sortBy, Class<T> table){
+        List<T> tbl = getTableListWith(sessionFactory, coln, data, sortBy, table);
         return tbl.isEmpty() ? null  : tbl.get(0);
     }
 
-    public static <T> List<T> getTableListWith(SessionFactory sessionFactory, String[] coln, Object[] data, Class<T> table){
+    public static <T> T getTableWith(SessionFactory sessionFactory, String[] coln, Object[] data, Class<T> table){
+        return getTableWith(sessionFactory, coln, data, null, table);
+    }
+
+    public static <T> List<T> getTableListWith(SessionFactory sessionFactory, String[] coln, Object[] data, String sortBy, Class<T> table){
         if(coln.length != data.length) return null;
 
         Session session = sessionFactory.getCurrentSession();
@@ -30,12 +34,18 @@ public class DataBaseUtils {
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(from.get(coln[i]), data[i]));
             criteriaQuery.where(predicate);
         }
+        if(sortBy != null) criteriaQuery.orderBy(criteriaBuilder.desc(from.get(sortBy)));
         TypedQuery<T> typedQuery = session.createQuery(criteriaQuery);
         List<T> users = typedQuery.getResultList();
         return users;
     }
 
-    public static <T> void removeTableWith(SessionFactory sessionFactory, String[] coln, Object[] data, Class<T> table){
+    public static <T> List<T> getTableListWith(SessionFactory sessionFactory, String[] coln, Object[] data, Class<T> table){
+        return getTableListWith(sessionFactory, coln, data, null, table);
+    }
+
+
+        public static <T> void removeTableWith(SessionFactory sessionFactory, String[] coln, Object[] data, Class<T> table){
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaDelete<T> delete = criteriaBuilder.createCriteriaDelete(table);

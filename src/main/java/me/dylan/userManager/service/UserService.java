@@ -120,12 +120,22 @@ public class UserService {
     @Path("remove")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response remove(UserCurrentIDJSON uc) {
+    public Response remove(UserRemoveJSON uc) {
         if(uc.getCurrentID() == null || uc.getUsername() == null)
             return MapError.JSON_STRUCTURE_WRONG.getError();
         User user = userDAO.getCID(uc.getUsername(), uc.getCurrentID());
         if(user == null) return MapError.USER_NOT_FOUND.getError();
-        userDAO.remove(user);
+        if(uc.getUsertoremove() == null) {
+            userDAO.remove(user);
+            Map<String, String> map = new HashMap<>();
+            map.put("done", "ok");
+            return Response.status(Response.Status.OK).entity(map).build();
+        }
+        if(user.getRights() < 2500) return MapError.USER_RIGHTS_TO_LOW.getError();
+        User userToRemove = userDAO.get(uc.getUsertoremove());
+        if(userToRemove == null) return MapError.USER_NOT_FOUND.getError();
+
+        userDAO.remove(userToRemove);
         Map<String, String> map = new HashMap<>();
         map.put("done", "ok");
         return Response.status(Response.Status.OK).entity(map).build();
@@ -140,7 +150,31 @@ public class UserService {
             return MapError.JSON_STRUCTURE_WRONG.getError();
         User user = userDAO.getCID(ug.getUsername(), ug.getCurrentID());
         if(user == null) return MapError.USER_NOT_FOUND.getError();
-        return Response.status(Response.Status.OK).entity(user).build();
+
+        UserReturnJSON userR = new UserReturnJSON();
+        userR.setId(user.getId());
+        userR.setName(user.getName());
+        userR.setEmail(user.getEmail());
+        userR.setCurrentID(user.getCurrentID());
+        userR.setValidUntilID(user.getValidUntilID());
+        userR.setRights(user.getRights());
+        return Response.status(Response.Status.OK).entity(userR).build();
+    }
+
+    @POST
+    @Path("getall")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getall(UserGetJSON ug) {
+        if(ug.getUsername() == null || ug.getCurrentID() == null)
+            return MapError.JSON_STRUCTURE_WRONG.getError();
+        User user = userDAO.getCID(ug.getUsername(), ug.getCurrentID());
+        if(user == null) return MapError.USER_NOT_FOUND.getError();
+        if(user.getRights() < 2500) return MapError.USER_RIGHTS_TO_LOW.getError();
+
+        List<User> users = userDAO.getAll();
+
+        return Response.status(Response.Status.OK).entity(users).build();
     }
 
     @POST
