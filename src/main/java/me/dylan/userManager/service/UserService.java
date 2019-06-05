@@ -146,8 +146,17 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(UserGetJSON ug) {
-        if(ug.getUsername() == null || ug.getCurrentID() == null)
+        if(ug.getUsername() == null)
             return MapError.JSON_STRUCTURE_WRONG.getError();
+        if(ug.getCurrentID() == null){
+            User user = userDAO.get(ug.getUsername());
+            if(user == null) return MapError.USER_NOT_FOUND.getError();
+            UserSmallReturnJSON usrj = new UserSmallReturnJSON();
+            usrj.setId(user.getId());
+            usrj.setName(user.getName());
+            usrj.setEmail(user.getEmail());
+            return Response.status(Response.Status.OK).entity(usrj).build();
+        }
         User user = userDAO.getCID(ug.getUsername(), ug.getCurrentID());
         if(user == null) return MapError.USER_NOT_FOUND.getError();
 

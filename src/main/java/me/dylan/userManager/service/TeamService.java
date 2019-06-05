@@ -38,7 +38,7 @@ public class TeamService {
             return MapError.JSON_STRUCTURE_WRONG.getError();
         User user = userDAO.getCID(tc.getUsername(), tc.getCurrentID());
         if(user == null) return MapError.USER_NOT_FOUND.getError();
-        if(user.getRights() < 250) return MapError.USER_RIGHTS_TO_LOW.getError();
+        if(user.getRights() < 100) return MapError.USER_RIGHTS_TO_LOW.getError();
         Team check = teamDAO.get(tc.getTeamname());
         if(check != null) return MapError.TEAM_ALREADY_EXISTS.getError();
 

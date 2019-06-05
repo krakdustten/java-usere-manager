@@ -24,7 +24,7 @@ public class Team implements Serializable {
     @NotNull
     private String name;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy = "team",cascade = {CascadeType.ALL}, fetch=FetchType.EAGER)
     private List<TeamUser> teamUsers = new ArrayList<>();
 
     public Team(){ }
