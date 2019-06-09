@@ -92,7 +92,7 @@ public class UserService {
         EmailHandler.sendConfirmation(user);
         user.setCurrentID("");
 
-        return Response.status(Response.Status.OK).entity(user).build();
+        return Response.status(Response.Status.OK).entity("{ \"done\" = true }").build();
     }
 
     @GET

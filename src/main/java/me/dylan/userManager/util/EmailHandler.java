@@ -39,7 +39,7 @@ public class EmailHandler {
     }
 
     public static void sendConfirmation(User user){
-        String link = "http://localhost:8180/user_manager/rest/user/register/confirm?" +
+        String link = "http://35.181.131.32/rest/user/register/confirm?" +
                 "username=" + user.getName() + "&confirmID=" + user.getCurrentID();
         String html = "<p>Hi,<br>\n" +
                       "<br>\n" +
